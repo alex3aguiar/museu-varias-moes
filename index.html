@@ -90,7 +90,7 @@
 
       scene = new THREE.Scene();
       scene.background = new THREE.Color(0x000000);
-      scene.fog = new THREE.Fog(0x111111, 0, 50);
+      // scene.fog = new THREE.Fog(0x111111, 0, 100);
 
       const light = new THREE.HemisphereLight(0xeeeeff, 0x777788, 0.75);
       light.position.set(0.5, 1, 0.75);
@@ -148,7 +148,7 @@
             break;
 
           case 'Space':
-            if (canJump === true) velocity.y += 350;
+            if (canJump === true) velocity.y += 200;
             canJump = false;
             break;
 
@@ -245,19 +245,43 @@
         const boxMaterial = new THREE.MeshBasicMaterial({
           map: loader.load(arts[i]),
         });
-        boxMaterial.color.setHSL(Math.random() * 0.2 + 0.5, 0.75, Math.random() * 0.25 + 0.75);
-
         const box = new THREE.Mesh(boxGeometry, boxMaterial);
-        box.position.x = Math.floor(Math.random() * 20 - 10) * 20;
+        box.position.x = -1*i*100;
         box.position.y = 10;
-        box.position.z = Math.floor(Math.random() * 20 - 10) * 20;
+        box.position.z = -40;
 
         scene.add(box);
         objects.push(box);
 
       }
+      function parede (x,z, posi, largura=50){
+        const boxMaterial = new THREE.MeshBasicMaterial({
+        map: loader.load("./textura-de-parede_87742-5736.jpg"),});
+        let a,b
+        if(posi){
+          a=largura,
+          b=2
 
-      //
+        }else{
+          a=2,
+          b=largura
+        }
+        const box = new THREE.Mesh(new THREE.BoxGeometry(a, 100, b).toNonIndexed(), boxMaterial);
+        box.position.x = x;
+        box.position.y = 50;
+        box.position.z = z;
+
+        scene.add(box);
+        objects.push(box);
+
+      }
+      parede(0,-30-75,1,100)
+      parede(0,+20,1,100)
+      parede(25,-30+25,0)
+      parede(25,-30-50,0)
+      parede(-50,-30+25,0)
+      parede(-50,-30-50,0)
+      
 
       renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setPixelRatio(window.devicePixelRatio);
@@ -299,7 +323,7 @@
         velocity.x -= velocity.x * 10.0 * delta;
         velocity.z -= velocity.z * 10.0 * delta;
 
-        velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
+        velocity.y -= 5.8 * 100.0 * delta; // 100.0 = mass
 
         direction.z = Number(moveForward) - Number(moveBackward);
         direction.x = Number(moveRight) - Number(moveLeft);
