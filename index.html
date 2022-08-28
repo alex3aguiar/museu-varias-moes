@@ -282,13 +282,20 @@
         "./guera.png",
         "./marido.png",
       ]
+     
 
-
-
-
+      let boxMaterialbanana = new THREE.MeshBasicMaterial({
+            map: loader.load("./Banana-Single.jpg"),
+        });
+        let boxBanana = new THREE.Mesh(new THREE.BoxGeometry(500, 10, 500).toNonIndexed(), boxMaterialbanana);
       let boxMaterialParede = new THREE.MeshBasicMaterial({
             map: loader.load("./textura-de-parede_87742-5736.jpg"),
         });
+        boxBanana.position.x =  100;
+          boxBanana.position.y = 500;
+          boxBanana.position.z = 200;
+            scene.add(boxBanana);
+            objects.push(boxBanana);
       let obras = 0
       for (let index = 0; index < 48; index++) {
         for (let index2 = 0; index2 < 29; index2++) {
