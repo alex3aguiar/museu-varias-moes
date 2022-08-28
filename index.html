@@ -282,33 +282,39 @@
         "./guera.png",
         "./marido.png",
       ]
-     
+
 
       let boxMaterialbanana = new THREE.MeshBasicMaterial({
-            map: loader.load("./Banana-Single.jpg"),
-        });
-        let boxBanana = new THREE.Mesh(new THREE.BoxGeometry(500, 10, 500).toNonIndexed(), boxMaterialbanana);
+        map: loader.load("./Banana-Single.jpg"),
+      });
+      let boxBanana = new THREE.Mesh(new THREE.BoxGeometry(500, 10, 500).toNonIndexed(), boxMaterialbanana);
       let boxMaterialParede = new THREE.MeshBasicMaterial({
-            map: loader.load("./textura-de-parede_87742-5736.jpg"),
-        });
-        boxBanana.position.x =  100;
-          boxBanana.position.y = 500;
-          boxBanana.position.z = 200;
-            scene.add(boxBanana);
-            objects.push(boxBanana);
+        map: loader.load("./textura-de-parede_87742-5736.jpg"),
+      });
+      boxBanana.position.x = 100;
+      boxBanana.position.y = 500;
+      boxBanana.position.z = 200;
+      scene.add(boxBanana);
+      objects.push(boxBanana);
       let obras = 0
       for (let index = 0; index < 48; index++) {
         for (let index2 = 0; index2 < 29; index2++) {
-  
+
           const elementx = map[index2 * 48 + index];
           let altura = 12
           if (elementx === '█') {
             altura = 300
           }
+
           let box = new THREE.Mesh(new THREE.BoxGeometry(20, altura, 20).toNonIndexed(), boxMaterialParede);
           box.position.x = index * 20;
           box.position.y = 10;
           box.position.z = index2 * 20;
+          if (index === 1 && index2 === 1) {
+            box.position.y   = 500
+            box.position.z += 300
+            box.position.x += 87
+          }
           if (elementx === '▒') {
             let boxMaterial = new THREE.MeshBasicMaterial({
               map: loader.load(arts[obras]),
@@ -321,7 +327,7 @@
             objects.push(box);
             obras++
           }
-          if (elementx * 1 +'' !== 'NaN') {
+          if (elementx * 1 + '' !== 'NaN') {
             box.position.y = 30 + elementx * 1 * 45;
           }
           scene.add(box);
@@ -403,10 +409,10 @@
 
       prevTime = time;
       console.log(zoom)
-      if(zoom){
+      if (zoom) {
         camera.fov = 40;
-        
-      }else{
+
+      } else {
         camera.fov = 75;
       }
       camera.updateProjectionMatrix();
