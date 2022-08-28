@@ -39,7 +39,10 @@
       <p>
         Move: WASD<br />
         Jump: SPACE<br />
-        Look: MOUSE
+        Look: MOUSE<br />
+        q: zoom<br />
+        cuidado com buracos
+
       </p>
     </div>
   </div>
@@ -57,6 +60,39 @@
 		</script>
 
   <script type="module">
+    const map = `
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░▒░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░█░░██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░█░░░██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░██░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░█░░░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░█░░░░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░█░░░░░░░███░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░█░░░░░░░░░░██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░██░░░░░░░░░░░███░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░██░░░░▒░░░░░░████░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░░██░░░░░░░░░░░░░█████░░░░░░░░░░░░░░░░░░░░
+░░░░░░░░░██░░░░░░░░░░░░░░░██████░░░░░░░░░░░░░░░
+░░░░░░░░░░░██░░░░░▒░░░░░░░░░░░░███████░░░░░░░░░
+░░░░░░░░░░░░██░░░░░░░░░░░░░░░░░░░░░░░░████████░
+░░░░░░░░░░░░░████░░░░░░░░▒░░░░░░░░░░░░░░░░░░░░░
+░░░░░░░░░░░░░░░░█████░░░░░░░░░░░░░░░░███░░░░░░░░░
+░░░░░░░░░░░░░░░░░░░░███░░░░░░░░░░░░███░░░░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░██████████████░░░░░░░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░9░░8░░7░░░6░░░5░░░4░░░3░2░░1░░░░░░░░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
+    
+    `.trim()
 
     import * as THREE from 'three';
 
@@ -73,6 +109,7 @@
     let moveLeft = false;
     let moveRight = false;
     let canJump = false;
+    let zoom = false
 
     let prevTime = performance.now();
     const velocity = new THREE.Vector3();
@@ -86,7 +123,7 @@
     function init() {
 
       camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
-      camera.position.y = 10;
+      camera.position.y = 20;
 
       scene = new THREE.Scene();
       scene.background = new THREE.Color(0x000000);
@@ -146,9 +183,12 @@
           case 'KeyD':
             moveRight = true;
             break;
+          case 'KeyQ':
+            zoom = true;
+            break;
 
           case 'Space':
-            if (canJump === true) velocity.y += 200;
+            if (canJump === true) velocity.y += 400;
             canJump = false;
             break;
 
@@ -164,7 +204,9 @@
           case 'KeyW':
             moveForward = false;
             break;
-
+          case 'KeyQ':
+            zoom = false;
+            break;
           case 'ArrowLeft':
           case 'KeyA':
             moveLeft = false;
@@ -220,7 +262,7 @@
 
       // objects
 
-      const boxGeometry = new THREE.BoxGeometry(19.2*0.75, 10.8*0.75, 20).toNonIndexed();
+      const boxGeometry = new THREE.BoxGeometry(19.2 * 0.75, 10.8 * 0.75, 20).toNonIndexed();
 
       position = boxGeometry.attributes.position;
       const colorsBox = [];
@@ -235,53 +277,50 @@
       boxGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colorsBox, 3));
       const loader = new THREE.TextureLoader();
       const arts = [
-      "./arrt.png",
-      "./bibli.jpg",
-      "./guera.png",
-      "./marido.png",
+        "./arrt.png",
+        "./bibli.jpg",
+        "./guera.png",
+        "./marido.png",
       ]
-      for (let i = 0; i < 4; i++) {
 
-        const boxMaterial = new THREE.MeshBasicMaterial({
-          map: loader.load(arts[i]),
+
+
+
+      let boxMaterialParede = new THREE.MeshBasicMaterial({
+            map: loader.load("./textura-de-parede_87742-5736.jpg"),
         });
-        const box = new THREE.Mesh(boxGeometry, boxMaterial);
-        box.position.x = -1*i*100;
-        box.position.y = 10;
-        box.position.z = -40;
-
-        scene.add(box);
-        objects.push(box);
-
-      }
-      function parede (x,z, posi, largura=50){
-        const boxMaterial = new THREE.MeshBasicMaterial({
-        map: loader.load("./textura-de-parede_87742-5736.jpg"),});
-        let a,b
-        if(posi){
-          a=largura,
-          b=2
-
-        }else{
-          a=2,
-          b=largura
+      let obras = 0
+      for (let index = 0; index < 48; index++) {
+        for (let index2 = 0; index2 < 29; index2++) {
+  
+          const elementx = map[index2 * 48 + index];
+          let altura = 12
+          if (elementx === '█') {
+            altura = 300
+          }
+          let box = new THREE.Mesh(new THREE.BoxGeometry(20, altura, 20).toNonIndexed(), boxMaterialParede);
+          box.position.x = index * 20;
+          box.position.y = 10;
+          box.position.z = index2 * 20;
+          if (elementx === '▒') {
+            let boxMaterial = new THREE.MeshBasicMaterial({
+              map: loader.load(arts[obras]),
+            });
+            box = new THREE.Mesh(boxGeometry, boxMaterial);
+            box.position.y = 32;
+            box.position.x = index * 20;
+            box.position.z = index2 * 20;
+            scene.add(box);
+            objects.push(box);
+            obras++
+          }
+          if (elementx * 1 +'' !== 'NaN') {
+            box.position.y = 30 + elementx * 1 * 45;
+          }
+          scene.add(box);
+          objects.push(box);
         }
-        const box = new THREE.Mesh(new THREE.BoxGeometry(a, 100, b).toNonIndexed(), boxMaterial);
-        box.position.x = x;
-        box.position.y = 50;
-        box.position.z = z;
-
-        scene.add(box);
-        objects.push(box);
-
       }
-      parede(0,-30-75,1,100)
-      parede(0,+20,1,100)
-      parede(25,-30+25,0)
-      parede(25,-30-50,0)
-      parede(-50,-30+25,0)
-      parede(-50,-30-50,0)
-      
 
       renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setPixelRatio(window.devicePixelRatio);
@@ -318,7 +357,7 @@
 
         const onObject = intersections.length > 0;
 
-        const delta = (time - prevTime) / 1000;
+        const delta = (time - prevTime) / 800;
 
         velocity.x -= velocity.x * 10.0 * delta;
         velocity.z -= velocity.z * 10.0 * delta;
@@ -356,7 +395,14 @@
       }
 
       prevTime = time;
-
+      console.log(zoom)
+      if(zoom){
+        camera.fov = 40;
+        
+      }else{
+        camera.fov = 75;
+      }
+      camera.updateProjectionMatrix();
       renderer.render(scene, camera);
 
     }
