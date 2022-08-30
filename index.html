@@ -47,6 +47,7 @@
         Look: MOUSE<br />
         q: zoom<br />
         cuidado com buracos
+        objetivo principal = chegar naquele piso la em cima
 
       </p>
     </div>
@@ -337,11 +338,12 @@
           if (elementx === '█') {
             altura = 300
           }
-
           let box = new THREE.Mesh(new THREE.BoxGeometry(20, altura, 20).toNonIndexed(), boxMaterialParede);
           box.position.x = index * 20;
           box.position.y = 10;
           box.position.z = index2 * 20;
+   
+
           if (index === 1 && index2 === 1) {
             box.position.y = 500
             box.position.z += 300
@@ -440,7 +442,10 @@
       }
       const teste  = (new Date() - today)/1000
       cronometro.innerText = teste
-      if(camera.position.y > 500 && !parou ){
+      console.log(camera.position.x, camera.position.z)
+     
+      
+      if(camera.position.x > 100 && camera.position.x < 105 && camera.position.z > 325 && camera.position.z < 330  && !parou ){
         alert("vc conseguiu "+ teste)
         parou = true
       }
