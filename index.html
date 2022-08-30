@@ -13,7 +13,10 @@
       height: 100%;
       background-color: rgba(0, 0, 0, 0.5);
     }
-
+    #cronometro{
+      position: absolute;
+      z-index: 999;
+    }
     #instructions {
       width: 100%;
       height: 100%;
@@ -31,7 +34,9 @@
 </head>
 
 <body>
+  <p id='cronometro'>00:00</p>
   <div id="blocker">
+    
     <div id="instructions">
       <p style="font-size:36px">
         Click to play
@@ -60,6 +65,7 @@
 		</script>
 
   <script type="module">
+   var today = new Date();   
     const map = `
 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
@@ -97,7 +103,8 @@
     import * as THREE from 'three';
 
     import { PointerLockControls } from './PointerLockControls.js';
-
+    import { TextGeometry } from './TextGeometry.js';
+    import { FontLoader } from './FontLoader.js';
     let camera, scene, renderer, controls;
 
     const objects = [];
@@ -119,11 +126,12 @@
 
     init();
     animate();
-
+    let parou = false;
     function init() {
 
       camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
       camera.position.y = 20;
+      camera.position.z = -30;
 
       scene = new THREE.Scene();
       scene.background = new THREE.Color(0x000000);
@@ -273,7 +281,31 @@
         colorsBox.push(color.r, color.g, color.b);
 
       }
-
+      const fL =  new FontLoader()
+      fL.load('./gentilis_regular.typeface.json', function (font) {
+        const textGeometry = new TextGeometry(
+            `Bem vindo ao 
+            museu de várias mões!!`,
+            {
+                font: font,
+                size: 2,
+                height: 0.2,
+                curveSegments: 12,
+                bevelEnabled: true,
+                bevelThickness: 0.03,
+                bevelSize: 0.02,
+                bevelOffset: 0,
+                bevelSegments: 5
+            }
+        )
+        const textMaterial = new THREE.MeshBasicMaterial()
+        const text = new THREE.Mesh(textGeometry, textMaterial)
+        text.position.x = -10;
+        text.position.y = 20;
+        text.position.z = -50;
+        scene.add(text)
+        objects.push(text);
+      });
       boxGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colorsBox, 3));
       const loader = new THREE.TextureLoader();
       const arts = [
@@ -282,7 +314,6 @@
         "./guera.png",
         "./marido.png",
       ]
-
 
       let boxMaterialbanana = new THREE.MeshBasicMaterial({
         map: loader.load("./Banana-Single.jpg"),
@@ -297,6 +328,7 @@
       scene.add(boxBanana);
       objects.push(boxBanana);
       let obras = 0
+
       for (let index = 0; index < 48; index++) {
         for (let index2 = 0; index2 < 29; index2++) {
 
@@ -311,7 +343,7 @@
           box.position.y = 10;
           box.position.z = index2 * 20;
           if (index === 1 && index2 === 1) {
-            box.position.y   = 500
+            box.position.y = 500
             box.position.z += 300
             box.position.x += 87
           }
@@ -334,7 +366,6 @@
           objects.push(box);
         }
       }
-
       renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setPixelRatio(window.devicePixelRatio);
       renderer.setSize(window.innerWidth, window.innerHeight);
@@ -357,6 +388,7 @@
 
     function animate() {
 
+    
       requestAnimationFrame(animate);
 
       const time = performance.now();
@@ -406,7 +438,12 @@
         }
 
       }
-
+      const teste  = (new Date() - today)/1000
+      cronometro.innerText = teste
+      if(camera.position.y > 500 && !parou ){
+        alert("vc conseguiu "+ teste)
+        parou = true
+      }
       prevTime = time;
       console.log(zoom)
       if (zoom) {
